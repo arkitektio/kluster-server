@@ -58,7 +58,6 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = "authentikate.User"
 
 
-
 GRAPHENE = {"SCHEMA": "core.schema.schema"}
 
 CHANNEL_LAYERS = {
@@ -69,12 +68,17 @@ CHANNEL_LAYERS = {
     },
 }
 
-DASK_GATEWAY_HOST = "dask_gateway"
-DASK_GATEWAY_PORT = 8000
+DASK_GATEWAY_HOST = conf.dask_gateway.host
+DASK_GATEWAY_PORT = conf.dask_gateway.port
 
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+
+STRAWBERRY_DJANGO = {
+    "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
+    "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
+}
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -159,6 +163,7 @@ AUTHENTIKATE = {
     ],
     "IMITATE_PERMISSION": "authentikate.imitate",
     "ALLOW_IMITATE": True,
+    "STATIC_TOKENS": conf.lok.get("static_tokens", {}),
 }
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -167,16 +172,13 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{conf.redis.host}:{conf.redis.port}/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
-        },
-        "KEY_PREFIX": "kluster_server_cache"
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "kluster_server_cache",
     }
 }
 
 
-CACHE_TTL_DEFAULT =  60 * 15
-
+CACHE_TTL_DEFAULT = 60 * 15
 
 
 LANGUAGE_CODE = "en-us"

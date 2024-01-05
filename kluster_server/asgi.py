@@ -15,12 +15,12 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kluster_server.settings")
 django.setup()
 
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from django.urls import re_path
-from django.core.asgi import get_asgi_application
-from kante.consumers import KanteHTTPConsumer, KanteWsConsumer
-from kante.cors import CorsMiddleware
+from channels.routing import ProtocolTypeRouter, URLRouter # noqa
+from channels.auth import AuthMiddlewareStack  # noqa
+from django.urls import re_path  # noqa
+from django.core.asgi import get_asgi_application  # noqa
+from kante.consumers import KanteHTTPConsumer, KanteWsConsumer  # noqa
+from kante.cors import CorsMiddleware  # noqa
 
 
 # Initialize Django ASGI application early to ensure the AppRegistry
@@ -47,7 +47,7 @@ application = ProtocolTypeRouter(
             [
                 re_path("^graphql", gql_http_consumer),
                 re_path(
-                    "^", django_asgi_app
+                    "^", django_asgi_app # type: ignore
                 ),  # This might be another endpoint in your app
             ]
         ),

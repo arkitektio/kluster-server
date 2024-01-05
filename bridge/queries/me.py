@@ -1,7 +1,15 @@
-from bridge import models, types
-from koherent.types import Info
-
+from bridge import types
+from kante.types import Info
+from typing import cast
 
 def me(info: Info) -> types.User:
-    return info.context.request.user
-    
+    """Return the currently logged in user.
+
+    Parameters
+    ----------
+    info : Info
+        The GraphQL resolver info.
+
+
+    """
+    return cast(types.User, info.context.request.user)

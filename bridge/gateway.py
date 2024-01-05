@@ -1,47 +1,70 @@
-from dask_gateway import Gateway, BasicAuth
-from .models import OmeroUser
-from contextlib import contextmanager
+from dask_gateway import Gateway
+from dask_gateway.auth import GatewayAuth
 from django.conf import settings
 from contextvars import ContextVar
 from strawberry.extensions import SchemaExtension
-from asgiref.sync import sync_to_async
-from typing import Optional
 from kante.types import ChannelsWSContext
+from typing import Any
+
 current_dask_gateway: ContextVar[Gateway] = ContextVar("current_dask_gateway")
-from dask_gateway.auth import GatewayAuth
 
 
-class JWTAuth(GatewayAuth):
-    """Attaches HTTP Basic Authentication to the given Request object."""
+class JWTAuth(GatewayAuth): # type: ignore
+    """Attaches HTTP Bearert Authentication to the given Request object."""
 
-    def __init__(self, token):
+    def __init__(self, token: str) -> None:
+        """ Create a new JWTAuth object"""
         self.token = token
 
         print(self.token)
 
-    def pre_request(self, resp):
+    def pre_request(self, resp: Any) -> tuple[dict[str, str], None]:
+        """ Add the Authorization header to the request
+        
+        Hook called before the request is made. This hook adds the Authorization
+        header to the request."""
         headers = {"Authorization": "Bearer " + self.token}
         return headers, None
 
 
-@sync_to_async
-def get_omero_user(context: ChannelsWSContext) -> Optional[OmeroUser]:
-    if not context.request.user.is_authenticated:
-        raise Exception("User is not authenticated")
-
-    user = OmeroUser.objects.filter(user=context.request.user).first()
-    return user
-
-
 def get_gateway() -> Gateway:
+    """Get the current Dask Gateway connection
+
+    This function gets the current Dask Gateway connection from the context
+    of the GraphQL request. If no Dask Gateway connection is found, an
+    exception is raised.
+
+    Returns
+    -------
+    Gateway
+        The Dask Gateway connection
+
+    Raises
+    ------
+    Exception
+        If no Dask Gateway connection is found
+
+    """
     try:
         return current_dask_gateway.get()
     except LookupError:
         raise Exception("No Dask Gateway connection found")
-    
 
 
 def create_gateway(context: ChannelsWSContext) -> Gateway:
+    """Create a new Dask Gateway connection
+
+    Parameters
+    ----------
+    context : ChannelsWSContext
+        The context of the GraphQL request
+
+    Returns
+    -------
+    Gateway
+        The Dask Gateway connection
+
+    """
     gateway = Gateway(
         address=f"http://{settings.DASK_GATEWAY_HOST}:{settings.DASK_GATEWAY_PORT}",
         auth=JWTAuth(context.request.auth.token.raw),
@@ -50,13 +73,16 @@ def create_gateway(context: ChannelsWSContext) -> Gateway:
     return gateway
 
 
-
 class DaskGatewayExtension(SchemaExtension):
-
-    async def on_operation(self): # type: ignore
+    """A Strawberry Schema Extension for Dask Gateway"""
+    async def on_operation(self) -> None:  # type: ignore
+        """Create a new Dask Gateway connection and add it to the context.
+        
+        Hook is called before the operation is executed. This hook creates a new
+        Dask Gateway connection and adds it to the context of the GraphQL request.
+        """
         print("Starting operation")
         try:
-            
             gateway = create_gateway(self.execution_context.context)
             token = current_dask_gateway.set(gateway)
 

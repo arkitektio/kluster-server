@@ -14,9 +14,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import re_path, path
-
+from typing import Any
 
 app_name = "bridge"
 
-urlpatterns = []
+urlpatterns: list[Any] = []
