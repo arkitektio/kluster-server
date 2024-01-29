@@ -12,6 +12,7 @@ RUN mkdir /workspaces
 # Copy dependencies
 COPY pyproject.toml /
 COPY poetry.lock /
+COPY README.md /
 RUN poetry install
 
 
