@@ -106,3 +106,11 @@ class DaskCluster:
         return Security(
             tls_key=self.value.security.tls_key, tls_cert=self.value.security.tls_cert
         )
+    
+    @strawberry.field(description="The user who created the dask cluster")
+    def n_workers(self) -> int:
+        """ The number of workers in the dask cluster"""
+        
+
+
+        return self.value.n_workers

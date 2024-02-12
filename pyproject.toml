@@ -26,6 +26,7 @@ koherent = ">=0.1.2"
 django-redis = "^5.4.0"
 dask-gateway-server = {extras = ["local"], version = "^2023.9.0"}
 dask-gateway = "^2023.9.0"
+django-health-check = "^3.18.1"
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main", "strawberry.ext.mypy_plugin", "pydantic.mypy"]

@@ -36,6 +36,9 @@ class Mutation:
     stop_dask_cluster: ID = strawberry_django.mutation(
         resolver=mutations.stop_dask_cluster, description="Stop a dask cluster"
     )
+    scale_dask_cluster: types.DaskCluster = strawberry_django.mutation(
+        resolver=mutations.scale_dask_cluster, description="Scale a dask cluster"
+    )
 
 
 schema = strawberry.Schema(

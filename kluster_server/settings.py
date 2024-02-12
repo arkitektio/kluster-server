@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    "health_check",
+    "health_check.db",
     "channels_redis",
     "guardian",
     "simple_history",
